@@ -20,24 +20,41 @@
         <section id="monster" class="container">
             <h2>Monster Health</h2>
             <div class="healthbar">
-                <div class="healthbar__value"></div>
+                <div class="healthbar__value" :style="monsterBarStyles"></div>
             </div>
         </section>
         <section id="player" class="container">
             <h2>Your Health</h2>
             <div class="healthbar">
-                <div class="healthbar__value"></div>
+                <div class="healthbar__value" :style="playerBarStyles"></div>
             </div>
         </section>
-        <section id="controls">
-            <button>ATTACK</button>
-            <button>SPECIAL ATTACK</button>
-            <button>HEAL</button>
-            <button>SURRENDER</button>
+        <section class="container" v-if="winner">
+            <h2>Game Over!</h2>
+            <h3 v-if="winner === 'monster'">You lost!</h3>
+            <h3 v-else-if="winner === 'player'">You won!</h3>
+            <h3 v-else>It's a draw!</h3>
+            <button @click="startGame">Start New Game</button>
+        </section>
+        <section id="controls" v-else>
+            <button @click="playerAttack">ATTACK</button>
+            <button :disabled="isSpecialAttackAvailable" @click="playerSpecialAttack">SPECIAL ATTACK</button>
+            <button :disabled="isHealAvailable" @click="heal">HEAL</button>
+            <button @click="surrender">SURRENDER</button>
         </section>
         <section id="log" class="container">
             <h2>Battle Log</h2>
-            <ul></ul>
+            <ul>
+                <li v-for="log in battleLog">
+                    <span :class="{'log--player': log.actionBy === 'Player', 'log--monster': log.actionBy === 'Monster'}">{{ log.actionBy }}</span>
+                    <span v-if="log.actionType === 'Heal'">
+                        heals himself for <span class="log--heal">{{ log.actionValue }}</span>
+                    </span>
+                    <span v-else>
+                        attacks and deals <span class="log--damage">{{ log.actionValue }}</span>
+                    </span>
+                </li>
+            </ul>
         </section>
     </div>
 </body>
